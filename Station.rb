@@ -1,33 +1,61 @@
 class Station
   attr_accessor :name
-
+  attr_reader :trains
+ 
   def initialize(name)
     @name = name
     @trains = []
   end
 
   def arrive(train)
-    if @trains.include?(train)
-      puts "Already at the station #{name}, wrong info"
+    if !train.instance_of? Train
+      puts "Wrong argument type"
+    elsif self.trains.include?(train)
+      puts "Already at the station '#{self.name}', wrong info"
+    elsif train.route.nil?
+      puts "No route for '#{train.number}', wrong info"
+    elsif !train.route.list.include?(self)
+      puts "Station '#{self.name}' not listed in route for '#{train.number}', wrong info"
     else
-      @trains << train
+      self.trains << train
+      train.current_station_index = train.route.list.index(self)
+      true
     end
   end
 
   def depart(train)
-    if @trains.include?(train)
-      @trains.delete(train)
+    if !train.instance_of? Train
+      puts "Wrong argument type"
+    elsif self.trains.include?(train)
+      self.trains.delete(train)
     else
-      puts "Already departed from the station #{name}, wrong info"
+      puts "Already departed from the station '#{self.name}', wrong info"
     end
   end
 
   def list_trains
-    @trains.each { |train| puts "#{train.number}" }
+    count_trains = self.trains.size
+    if count_trains == 0
+      puts "No any train at the station '#{@name}'" 
+    elsif count_trains == 1
+      puts "There is only '#{@trains[0].number}' at the station '#{@name}'"
+    else
+      puts "There are trains at the station '#{@name}':"
+      self.trains.each { |train| puts "#{train.number}" }
+    end
   end
 
-  def list_trains_by_type
-    @trains.each { |train| puts "#{train.number} type: #{train.type}" }
+  def list_trains_by_type(train_type)
+    if !train.instance_of? String
+      puts "Wrong argument type"
+    else
+      if self.trains.size > 0
+        puts "#{train.number} type: #{train.type}" 
+        self.trains.each { |train| puts "#{train.number}" if train.type == train_type }
+      else
+        puts "No any train at the station '#{@name}'" 
+      end
+    end
   end
 
 end
