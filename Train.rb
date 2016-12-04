@@ -32,7 +32,7 @@ class Train
   end
 
   def move(speed)
-    self.speed = speed if ( (speed.instance_of? Float) || (speed.instance_of? Fixnum) ) && speed > 0 
+    self.speed = speed if speed > 0 
   end
 
   def break
@@ -41,7 +41,7 @@ class Train
 
   def hitch_carriage
     if self.speed > 0
-      puts "Impossible to hitch because of speed #{@speed}"
+      puts "Impossible to hitch because of speed #{self.speed}"
     else
       self.carriages += 1
     end
@@ -49,7 +49,7 @@ class Train
 
   def unhitch_carriage
     if self.speed > 0
-      puts "Impossible to hitch because of speed #{@speed}"
+      puts "Impossible to hitch because of speed #{self.speed}"
     elsif self.carriages == 0 
       puts "Impossible because of no any carriage hitched"
     else
@@ -65,21 +65,68 @@ class Train
     else
       self.route = route
       self.route.list[0].arrive(self)
+      self.current_station_index = 0
     end
   end
 
-  def move_by_route
-    if self.current_station_index == (self.route.list.size - 1)
-      puts "Already at the final station. Set a new route for '#{self.number}'"
-    elsif self.route.list.size > 1
-      current_station = self.route.list[self.current_station_index]
-      current_station.depart(self)
-      
-      next_station = self.route.list[self.current_station_index+1]
-      next_station.arrive(self)
-    else
+# forward: true - вперед, false - назад
+  def move_by_route(forward=true)
+    if !( (forward.instance_of? TrueClass) || (forward.instance_of? FalseClass) )
+      puts "Wrong argument type"
+    elsif self.route.list.size == 0 
       puts "Couldn't move train '#{self.number}' because of empty route"
+    elsif self.route.list.size == 1 
+      puts "Couldn't move train '#{self.number}' because of only 1 station in the route"
+    else
+      if forward && self.current_station_index == (self.route.list.size - 1)
+        puts "Already at the final station. Set a new route for the train '#{self.number}'"
+      elsif !forward && self.current_station_index == 0
+        puts "Already at the start station. Set a new route for the train '#{self.number}'"
+      else
+        current_station = self.route.list[self.current_station_index]
+        current_station.depart(self)
+        
+        if forward
+          next_station = self.route.list[self.current_station_index + 1]
+        else
+          next_station = self.route.list[self.current_station_index - 1]
+        end
+        next_station.arrive(self)
+      end
     end
   end
 
+  def current_station
+    if !self.route.instance_of? Route
+      puts "No route for the train '#{self.number}'"
+    elsif self.route.list.size == 0 
+      puts "The route is empty for the train '#{self.number}'"
+    else
+      puts "Current station for the train is '#{self.route.list[self.current_station_index].name}'"
+    end
+  end
+
+  def next_station
+    if !self.route.instance_of? Route
+      puts "No route for the train '#{self.number}'"
+    elsif self.route.list.size == 0 
+      puts "The route is empty for the train '#{self.number}'"
+    elsif self.current_station_index >= (self.route.list.size - 1)
+      puts "Already at the final station for the train '#{self.number}'"
+    else
+      puts "Next station for the train is '#{self.number}' is '#{self.route.list[self.current_station_index+1].name}'"
+    end
+  end
+  
+  def prev_station
+    if !self.route.instance_of? Route
+      puts "No route for the train '#{self.number}'"
+    elsif self.route.list.size == 0 
+      puts "The route is empty for the train '#{self.number}'"
+    elsif self.current_station_index == 0
+      puts "Already at the start station for the train '#{self.number}'"
+    else
+      puts "Previous station for the train is '#{self.number}' is '#{self.route.list[self.current_station_index-1].name}'"
+    end
+  end
 end

@@ -8,6 +8,7 @@ class Station
   end
 
   def arrive(train)
+    false
     if !train.instance_of? Train
       puts "Wrong argument type"
     elsif self.trains.include?(train)
@@ -24,10 +25,12 @@ class Station
   end
 
   def depart(train)
+    false
     if !train.instance_of? Train
       puts "Wrong argument type"
     elsif self.trains.include?(train)
       self.trains.delete(train)
+      true
     else
       puts "Already departed from the station '#{self.name}', wrong info"
     end
@@ -36,11 +39,11 @@ class Station
   def list_trains
     count_trains = self.trains.size
     if count_trains == 0
-      puts "No any train at the station '#{@name}'" 
+      puts "No any train at the station '#{self.name}'" 
     elsif count_trains == 1
-      puts "There is only '#{@trains[0].number}' at the station '#{@name}'"
+      puts "There is only '#{@trains[0].number}' at the station '#{self.name}'"
     else
-      puts "There are trains at the station '#{@name}':"
+      puts "There are trains at the station '#{self.name}':"
       self.trains.each { |train| puts "#{train.number}" }
     end
   end
@@ -53,7 +56,7 @@ class Station
         puts "#{train.number} type: #{train.type}" 
         self.trains.each { |train| puts "#{train.number}" if train.type == train_type }
       else
-        puts "No any train at the station '#{@name}'" 
+        puts "No any train at the station '#{self.name}'" 
       end
     end
   end
